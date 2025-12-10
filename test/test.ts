@@ -12,5 +12,5 @@ import { Timetable } from "../lib";
   console.log(table.getTitle());
   console.log(table.getDayNames());
   console.log(table.getHours());
-  // console.log(table.getDays());
+  console.log(table.getDays());
 })();
