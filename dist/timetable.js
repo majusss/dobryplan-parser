@@ -53,5 +53,9 @@ class Timetable {
         }
         return new table_1.default(html, id.type);
     }
+    getVersionInfo() {
+        console.log("Footer text:", this.$("footer").text());
+        return this.$("footer").text().replace("Plan obowiązuje od: ", "").trim();
+    }
 }
 exports.default = Timetable;

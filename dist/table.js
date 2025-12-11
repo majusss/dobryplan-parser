@@ -18,11 +18,11 @@ class Table {
         const rows = this.$("tr");
         const hours = {};
         rows.each((_, row) => {
-            var _a;
-            const isFullRow = +((_a = this.$(row).find(".l.t.r").attr("rowspan")) !== null && _a !== void 0 ? _a : 0) == 2;
-            if (!isFullRow)
+            const $row = this.$(row);
+            const hourCell = $row.find(".l.t.r");
+            if (hourCell.length === 0)
                 return;
-            const number = parseInt(this.$(row).find(".l.t.r").text().trim());
+            const number = parseInt(hourCell.text().trim());
             const timesText = this.$(row).children().eq(1).text().trim();
             const [timeFrom, timeTo] = timesText
                 .split("–")
@@ -123,17 +123,20 @@ class Table {
             const subject = branches.length
                 ? cellText.replace(branches, "").trim()
                 : cellText;
-            const small = this.getSmallCellData(cells.slice(cellIndex + 1));
+            const smallCell = this.getSmallCellData(cells.slice(cellIndex + 1));
             const lesson = {
                 subject: subject,
-                teacher: small.teacher,
-                teacherId: small.teacherId,
-                room: small.room,
-                roomId: small.roomId,
-                groupName: isSplit ? `Grupa ${groupIndex + 1}` : undefined,
+                teacher: smallCell.teacher,
+                teacherId: smallCell.teacherId,
+                room: smallCell.room,
+                roomId: smallCell.roomId,
+                groupName: this.type === "classes"
+                    ? isSplit
+                        ? `Grupa ${groupIndex + 1}`
+                        : undefined
+                    : undefined,
                 className: branches.length ? branches.trim() : undefined,
             };
-            // console.log("Do wiersz adodano lekcje nr", lessons.length + 1, lesson);
             lessons.push(lesson);
         });
         return { lessons, splitDayIndexes };

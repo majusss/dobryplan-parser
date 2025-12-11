@@ -8,4 +8,5 @@ export default class Timetable {
     private getKey;
     getList(): List;
     getTable(id: TableId): Table;
+    getVersionInfo(): string;
 }

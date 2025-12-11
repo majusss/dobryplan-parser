@@ -1,22 +1,14 @@
 import { Timetable } from "../lib";
+import Table from "../lib/table";
 
-(async () => {
-  const res = await fetch(
-    "https://zstio-elektronika.pl/nowy-plan/Dobryplan.html"
-  );
-  const html = await res.text();
-  const t = new Timetable(html);
-  const list = t.getList();
-  console.log(t);
-  const table = t.getTable(list.rooms[2].id);
-  console.log(table.getTitle());
-  console.log(table.getDayNames());
-  console.log(table.getHours());
+// AI SHIT TABLE (ale fajnie wyglada)
+function displayTable(table: Table) {
+  console.log("Plan lekcji:", table.getTitle());
+
   const days = table.getDays();
   const dayNames = table.getDayNames();
   const hours = table.getHours();
 
-  // AI SHIT (ale fajnie wyglada) TABLE
   const maxLesson = Math.max(
     ...days.flatMap((day) => day.map((_, index) => index))
   );
@@ -55,4 +47,22 @@ import { Timetable } from "../lib";
 
     timetableRows.push(row);
   }
+
+  console.table(timetableRows);
+}
+
+(async () => {
+  const res = await fetch(
+    "https://zstio-elektronika.pl/nowy-plan/Dobryplan.html"
+  );
+  const html = await res.text();
+  const t = new Timetable(html);
+  const list = t.getList();
+  const TP4 = list.classes.find((c) => c.name === "4TP");
+  const Ba = list.teachers.find((t) => t.name === "Ba");
+  const B24 = list.rooms.find((r) => r.name === "B24");
+  console.log("Plany lekcji na date:", t.getVersionInfo());
+  if (TP4) displayTable(t.getTable(TP4.id));
+  if (Ba) displayTable(t.getTable(Ba.id));
+  if (B24) displayTable(t.getTable(B24.id));
 })();
