@@ -1,5 +1,5 @@
 import { CheerioAPI, load } from "cheerio";
-import { List } from "./types";
+import { List, TableId, TableType } from "./types";
 import Table from "./table";
 
 export default class Timetable {
@@ -15,32 +15,47 @@ export default class Timetable {
       .map((el) => this.$(el).text().trim());
   }
 
+  private getKey(key: string): TableType {
+    switch (key.toLowerCase()) {
+      case "oddziały":
+        return "classes";
+      case "nauczyciele":
+        return "teachers";
+      case "sale":
+        return "rooms";
+      default:
+        throw new Error(`Unknown list key: ${key}`);
+    }
+  }
+
   public getList(): List {
     const navChildren = this.$("nav div").children().toArray();
     navChildren.shift(); // remove first element (it's dobryplan logo)
 
-    const values: List = {};
-    let currentKey = "";
+    const values: List = { classes: [], teachers: [], rooms: [] };
+    let currentKey: TableType | null = null;
     navChildren.forEach((el, i) => {
       const element = this.$(el);
       if (element.hasClass("h")) {
-        currentKey = element.text().trim();
-        values[currentKey] = [];
+        currentKey = this.getKey(element.text().trim());
       } else if (element.hasClass("l") && currentKey) {
         const name = element.text().trim();
         const value = element.attr("href")?.replace("#", "").trim() ?? "";
-        values[currentKey].push({ name, value });
+        values[currentKey].push({
+          name,
+          id: { value, type: currentKey },
+        });
       }
     });
     return values;
   }
 
-  public getTable(id: string) {
-    const table = this.$(`main table#${id}`).first();
+  public getTable(id: TableId): Table {
+    const table = this.$(`main table#${id.value}`).first();
     const html = table.html();
     if (!html) {
       throw new Error("Table not found");
     }
-    return new Table(html);
+    return new Table(html, id.type);
   }
 }

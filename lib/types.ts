@@ -5,21 +5,28 @@ export interface TableHour {
 }
 
 export interface ListItem {
+  id: TableId;
   name: string;
-  value: string;
 }
 
-export interface List {
-  [key: string]: ListItem[];
-}
+export type TableType = "classes" | "teachers" | "rooms";
+
+export type List = {
+  [key in TableType]: ListItem[];
+};
 
 export interface TableLesson {
   subject: string;
   room?: string;
-  roomId?: string;
+  roomId?: TableId;
   groupName?: string;
   teacher?: string;
-  teacherId?: string;
+  teacherId?: TableId;
   className?: string;
-  classId?: string;
+  classId?: TableId;
+}
+
+export interface TableId {
+  value: string;
+  type: TableType;
 }
